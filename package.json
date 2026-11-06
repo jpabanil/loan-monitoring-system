@@ -1,0 +1,19 @@
+{
+  "name": "loan-monitoring-system",
+  "private": true,
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "corepack pnpm --filter @lms/admin-web dev",
+    "dev:api": "corepack pnpm --filter @lms/api dev",
+    "worker": "corepack pnpm --filter @lms/api worker",
+    "db:setup": "corepack pnpm --filter @lms/api db:setup lms_test",
+    "db:migrate": "corepack pnpm --filter @lms/api db:migrate",
+    "db:seed": "corepack pnpm --filter @lms/api db:seed",
+    "build": "corepack pnpm -r build",
+    "test": "corepack pnpm -r test",
+    "typecheck": "corepack pnpm -r typecheck"
+  }
+}
