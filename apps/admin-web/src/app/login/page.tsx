@@ -16,6 +16,22 @@ interface LoginResponse {
 }
 
 /**
+ * Development seed staff accounts (mirrors SEED_STAFF in apps/api/scripts/seed.ts).
+ * Shown on the sign-in page only in `next dev`; stripped from production builds.
+ */
+const DEV_ACCOUNTS =
+  process.env.NODE_ENV === "development"
+    ? [
+        { role: "Admin", email: "admin@example.com" },
+        { role: "Manager", email: "manager@example.com" },
+        { role: "Manager", email: "manager2@example.com" },
+        { role: "Loan officer", email: "officer@example.com" },
+        { role: "Cashier", email: "cashier@example.com" },
+        { role: "Auditor", email: "auditor@example.com" },
+      ]
+    : [];
+
+/**
  * Staff sign-in (plan.md section 3): password, then a 6-digit authenticator
  * code. First sign-in sets up the authenticator and shows recovery codes once.
  */
@@ -31,6 +47,7 @@ function LoginInner() {
   const [useRecovery, setUseRecovery] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [passwordForm] = Form.useForm<{ email: string; password: string }>();
 
   const next = params.get("next")?.startsWith("/") ? params.get("next")! : "/dashboard";
 
@@ -87,6 +104,7 @@ function LoginInner() {
             <h1 className="page-title" style={{ fontSize: 24 }}>Welcome back</h1>
             <p className="page-sub" style={{ marginBottom: 22 }}>Sign in with your staff account.</p>
             <Form
+              form={passwordForm}
               layout="vertical"
               requiredMark={false}
               onFinish={(v: { email: string; password: string }) =>
@@ -108,6 +126,26 @@ function LoginInner() {
                 Continue
               </Button>
             </Form>
+            {DEV_ACCOUNTS.length > 0 ? (
+              <div style={{ marginTop: 22, paddingTop: 16, borderTop: "1px solid var(--border, rgba(127,127,127,0.2))" }}>
+                <div className="faint" style={{ fontSize: 12, marginBottom: 8 }}>
+                  Development accounts (click to fill)
+                </div>
+                <div style={{ display: "grid", gap: 2 }}>
+                  {DEV_ACCOUNTS.map((a) => (
+                    <button
+                      key={a.email}
+                      type="button"
+                      onClick={() => passwordForm.setFieldsValue({ email: a.email })}
+                      style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "4px 6px", border: 0, borderRadius: 6, background: "transparent", color: "inherit", cursor: "pointer", fontSize: 13, textAlign: "left" }}
+                    >
+                      <span>{a.email}</span>
+                      <span className="faint">{a.role}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </>
         ) : null}
 
